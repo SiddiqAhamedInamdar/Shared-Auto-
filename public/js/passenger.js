@@ -528,19 +528,19 @@ const PassengerView = {
 
             <div style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">UPI Apps</div>
             <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.simulatePayment(${ride.id}, ${ride.fare_estimate}, 'Google Pay')">
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.initiateNativeUPI(${ride.id}, ${ride.fare_estimate}, 'Google Pay')">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20" style="margin-right: 12px;" /> Pay via GPay
               </button>
-              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.simulatePayment(${ride.id}, ${ride.fare_estimate}, 'PhonePe')">
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.initiateNativeUPI(${ride.id}, ${ride.fare_estimate}, 'PhonePe')">
                 <div style="width: 20px; height: 20px; background: #5f259f; border-radius: 50%; color: white; display:flex; align-items:center; justify-content:center; font-size: 10px; font-weight:bold; margin-right:12px;">P</div> Pay via PhonePe
               </button>
-              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.simulatePayment(${ride.id}, ${ride.fare_estimate}, 'Paytm')">
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.initiateNativeUPI(${ride.id}, ${ride.fare_estimate}, 'Paytm')">
                 <div style="width: 20px; height: 20px; background: #00b9f1; border-radius: 50%; color: white; display:flex; align-items:center; justify-content:center; font-size: 10px; font-weight:bold; margin-right:12px;">P</div> Pay via Paytm
               </button>
             </div>
 
             <div style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Other Methods</div>
-            <button class="btn btn-secondary" style="width: 100%; justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.simulatePayment(${ride.id}, ${ride.fare_estimate}, 'Cash')">
+            <button class="btn btn-secondary" style="width: 100%; justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.processPayment(${ride.id}, ${ride.fare_estimate})">
               <i class="fas fa-money-bill-wave" style="color: var(--color-success); margin-right: 12px; font-size: 1.2rem;"></i> Pay Cash to Driver
             </button>
           </div>
@@ -561,46 +561,72 @@ const PassengerView = {
     }
   },
 
-  async simulatePayment(id, amount, method) {
+  async initiateNativeUPI(id, amount, method) {
     try {
       app.showToast(`Opening ${method}...`, 'info');
       
-      // Simulate app switch and transaction processing delay
-      setTimeout(async () => {
-        try {
-          const res = await API.post(`/api/passenger/rides/${id}/pay`, { amount, method });
-          app.showToast(`Test Payment of ₹${amount.toFixed(0)} via ${method} successful!`, 'success');
-          
-          this.activeRide = null;
-          this.renderHome(document.getElementById('passenger-content'));
-          this.showRatingModal(id);
-        } catch (err) {
-          app.showToast(err.error || 'Payment failed.', 'error');
-        }
-      }, 2000);
+      // 1. Construct the native UPI Intent URL
+      // We use an invalid payee address (security-test@ybl) so the bank app safely rejects it.
+      const upiId = 'security-test@ybl';
+      const name = encodeURIComponent('ShareAuto Test');
+      const intentUrl = `upi://pay?pa=${upiId}&pn=${name}&am=${amount.toFixed(2)}&cu=INR`;
+
+      // 2. Set up the visibility change listener to detect when they return
+      this.pendingPayment = { id, amount, method };
+      
+      if (!this.visibilityHandler) {
+        this.visibilityHandler = async () => {
+          if (document.visibilityState === 'visible' && this.pendingPayment) {
+            // User returned to browser from UPI app
+            const payment = this.pendingPayment;
+            this.pendingPayment = null; // Prevent duplicate fires
+            
+            app.showToast('UPI app transaction rejected for security. Completing test flow...', 'info');
+            
+            // 3. Mark the ride as paid in our backend
+            try {
+              const res = await API.post(`/api/passenger/rides/${payment.id}/verify-payment`, { 
+                amount: payment.amount, 
+                method: payment.method 
+              });
+              
+              if (res.success) {
+                app.showToast(`Test Payment of ₹${payment.amount.toFixed(0)} via ${payment.method} completed!`, 'success');
+                this.activeRide = null;
+                this.renderHome(document.getElementById('passenger-content'));
+              }
+            } catch (err) {
+              console.error(err);
+              app.showToast('Test flow failed.', 'error');
+            }
+          }
+        };
+        document.addEventListener('visibilitychange', this.visibilityHandler);
+      }
+
+      // 3. Trigger the Deep Link to physically open the UPI App
+      window.location.href = intentUrl;
       
     } catch (err) {
-      app.showToast('Payment simulation failed.', 'error');
+      console.error(err);
+      app.showToast('Failed to open UPI app.', 'error');
     }
   },
 
   async processPayment(id, amount) {
     try {
-      // Show loading indicator
-      app.showToast('Processing payment...', 'info');
-      
-      const res = await API.post(`/api/passenger/rides/${id}/pay`, { amount, method: 'cash' });
-      app.showToast(res.message || 'Payment successful! Thank you.', 'success');
-      
-      // Show the rating modal now that payment is done
-      this.showRatingModal(id);
+      app.showToast('Processing cash payment...', 'info');
+      const res = await API.post(`/api/passenger/rides/${id}/verify-payment`, { amount, method: 'Cash' });
+      app.showToast('Payment successful!', 'success');
       
       this.activeRide = null;
-      this.renderBookingPanel();
+      this.renderHome(document.getElementById('passenger-content'));
     } catch (err) {
-      app.showToast(err.error || 'Payment failed. Please try again.', 'error');
+      app.showToast(err.error || 'Payment failed.', 'error');
     }
   },
+
+
 
   bindWebSocket() {
     if (this.wsBound) return;

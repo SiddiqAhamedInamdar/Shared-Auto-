@@ -6,6 +6,7 @@ const { calculateFare } = require('../services/fareCalculator');
 const { findOrCreateSharedGroup, findNearestDriver } = require('../services/rideMatching');
 const { sendToUser, broadcastToRole } = require('../services/websocket');
 const { generateOTP, calculateDistance } = require('../utils/helpers');
+const paymentController = require('../controllers/paymentController');
 
 const router = express.Router();
 
@@ -221,40 +222,11 @@ router.get('/rides/active', (req, res) => {
   }
 });
 
-// POST /api/passenger/rides/:id/pay
-router.post('/rides/:id/pay', (req, res) => {
-  try {
-    const { amount, method } = req.body;
-    const ride = db.prepare('SELECT * FROM rides WHERE id = ? AND passenger_id = ?').get(req.params.id, req.user.id);
+// POST /api/passenger/rides/:id/create-order (Razorpay Integration)
+router.post('/rides/:id/create-order', paymentController.createOrder);
 
-    if (!ride) return res.status(404).json({ error: 'Ride not found.' });
-    if (ride.status !== 'completed') return res.status(400).json({ error: 'Ride is not completed yet.' });
-
-    // Insert payment record
-    db.prepare(`
-      INSERT INTO payments (ride_id, user_id, amount, method, status)
-      VALUES (?, ?, ?, ?, 'completed')
-    `).run(ride.id, req.user.id, amount, method || 'cash');
-
-    // Notify driver about payment confirmation
-    if (ride.driver_id) {
-      const driver = db.prepare('SELECT user_id FROM drivers WHERE id = ?').get(ride.driver_id);
-      if (driver) {
-        const { sendToUser } = require('../services/websocket');
-        sendToUser(driver.user_id, {
-          type: 'payment_confirmed',
-          rideId: ride.id,
-          amount: amount
-        });
-      }
-    }
-
-    res.json({ message: 'Payment successful! Thank you.' });
-  } catch (err) {
-    console.error('Process payment error:', err);
-    res.status(500).json({ error: 'Failed to process payment.' });
-  }
-});
+// POST /api/passenger/rides/:id/verify-payment (Razorpay Integration)
+router.post('/rides/:id/verify-payment', paymentController.verifyPayment);
 
 // GET /api/passenger/rides/:id
 router.get('/rides/:id', (req, res) => {
