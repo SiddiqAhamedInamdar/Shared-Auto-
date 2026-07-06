@@ -169,7 +169,7 @@ const DriverView = {
         </div>
       </div>
 
-      <div class="grid grid-2" style="grid-template-columns: 1.2fr 1.8fr; gap: 28px;">
+      <div class="grid grid-2 grid-desktop-asym">
         <!-- Left Side Controller Panel -->
         <div id="driver-control-panel">
           <div class="card" style="padding: 24px; text-align: center; color: var(--color-text-secondary);">

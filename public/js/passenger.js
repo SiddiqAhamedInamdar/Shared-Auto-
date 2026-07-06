@@ -12,7 +12,7 @@ const PassengerView = {
 
   renderHome(container) {
     container.innerHTML = `
-      <div class="grid grid-2" style="grid-template-columns: 1.2fr 1.8fr; gap: 28px;">
+      <div class="grid grid-2 grid-desktop-asym">
         <!-- Left Side Panel (Dynamic: Booking or Tracking) -->
         <div id="passenger-control-panel">
           <div class="loader-container"><div class="spinner"></div><p>Checking active rides...</p></div>
@@ -953,7 +953,7 @@ const PassengerView = {
             <form id="topup-form">
               <div class="form-group">
                 <label class="form-label">Topup Wallet (Simulated)</label>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
                   <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('topup-amount').value = 100">₹100</button>
                   <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('topup-amount').value = 200">₹200</button>
                   <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('topup-amount').value = 500">₹500</button>
