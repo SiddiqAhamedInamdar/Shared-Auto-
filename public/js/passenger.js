@@ -510,38 +510,39 @@ const PassengerView = {
       </div>
       
       ${ride.status === 'completed' ? `
-        <div class="modal-overlay active" style="display: flex; align-items: center; justify-content: center; position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(10, 14, 26, 0.95); z-index:9999;">
-          <div class="ride-request-card" style="width: 100%; max-width: 400px; padding: 24px; text-align: left; background: var(--color-bg-secondary); border-radius: var(--radius-xl);">
+        <div class="modal-overlay active" style="display: flex; align-items: center; justify-content: center; position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(10, 14, 26, 0.95); z-index:9999;" id="payment-modal">
+          <div class="ride-request-card" style="width: 100%; max-width: 400px; padding: 32px 24px; text-align: left; background: var(--color-bg-secondary); border-radius: var(--radius-xl); box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid var(--color-border);">
             
-            <div style="text-align: center; margin-bottom: 20px;">
-              <div style="background: var(--color-warning-bg); color: var(--color-warning); font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: var(--radius-full); display: inline-block; margin-bottom: 12px; border: 1px solid rgba(245, 158, 11, 0.3);">
-                <i class="fas fa-flask"></i> TEST MODE ACTIVE
+            <div style="text-align: center; margin-bottom: 24px;">
+              <div style="width: 64px; height: 64px; background: var(--color-success-bg); color: var(--color-success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px;">
+                <i class="fas fa-check-circle"></i>
               </div>
-              <h2 style="font-size: 1.4rem; margin-bottom: 4px;">Complete Payment</h2>
-              <p style="color: var(--color-text-muted); font-size: 0.9rem;">Choose a payment method to simulate.</p>
+              <h2 style="font-size: 1.5rem; margin-bottom: 4px; color: var(--color-text-primary);">Ride Completed!</h2>
+              <p style="color: var(--color-text-muted); font-size: 0.9rem;">Please settle your fare with the driver.</p>
             </div>
             
-            <div class="fare-summary" style="margin-bottom: 24px; background: var(--color-bg-tertiary); padding: 16px; border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--color-border-hover);">
-              <div style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 4px;">Total Amount Due</div>
-              <div style="font-size: 2rem; font-weight: 800; color: white;">₹${ride.fare_estimate.toFixed(0)}</div>
+            <div class="fare-summary" style="margin-bottom: 28px; background: var(--color-bg-tertiary); padding: 20px; border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--color-border-hover);">
+              <div style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 8px;">Total Amount Due</div>
+              <div style="font-size: 2.5rem; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <span style="font-size: 1.5rem; color: var(--color-text-muted);">₹</span>${ride.fare_estimate.toFixed(0)}
+              </div>
             </div>
 
-            <div style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">UPI Apps</div>
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.initiateNativeUPI(${ride.id}, ${ride.fare_estimate}, 'Google Pay')">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20" style="margin-right: 12px;" /> Pay via GPay
-              </button>
-              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.initiateNativeUPI(${ride.id}, ${ride.fare_estimate}, 'PhonePe')">
-                <div style="width: 20px; height: 20px; background: #5f259f; border-radius: 50%; color: white; display:flex; align-items:center; justify-content:center; font-size: 10px; font-weight:bold; margin-right:12px;">P</div> Pay via PhonePe
-              </button>
-              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.initiateNativeUPI(${ride.id}, ${ride.fare_estimate}, 'Paytm')">
-                <div style="width: 20px; height: 20px; background: #00b9f1; border-radius: 50%; color: white; display:flex; align-items:center; justify-content:center; font-size: 10px; font-weight:bold; margin-right:12px;">P</div> Pay via Paytm
+            <div style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Pay Online</div>
+            <div style="margin-bottom: 24px;">
+              <button class="btn btn-secondary" style="width: 100%; padding: 14px 16px; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 12px; background: #0c213c; color: #fff; border-color: #0c213c;" onclick="PassengerView.initiateRazorpayPayment(${ride.id})">
+                <img src="https://razorpay.com/assets/favicon.png" height="20" style="border-radius:4px" /> Pay via Razorpay (Cards, UPI, Netbanking)
               </button>
             </div>
 
-            <div style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Other Methods</div>
-            <button class="btn btn-secondary" style="width: 100%; justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.processPayment(${ride.id}, ${ride.fare_estimate})">
-              <i class="fas fa-money-bill-wave" style="color: var(--color-success); margin-right: 12px; font-size: 1.2rem;"></i> Pay Cash to Driver
+            <div style="display: flex; align-items: center; margin-bottom: 24px;">
+              <div style="flex: 1; height: 1px; background: var(--color-border);"></div>
+              <div style="padding: 0 12px; font-size: 0.8rem; color: var(--color-text-muted);">OR</div>
+              <div style="flex: 1; height: 1px; background: var(--color-border);"></div>
+            </div>
+
+            <button class="btn btn-primary btn-block" style="width: 100%; padding: 14px 16px; font-size: 1rem;" onclick="PassengerView.processPayment(${ride.id}, ${ride.fare_estimate})">
+              <i class="fas fa-money-bill-wave" style="margin-right: 8px;"></i> Pay Cash to Driver
             </button>
           </div>
         </div>
@@ -561,68 +562,106 @@ const PassengerView = {
     }
   },
 
-  async initiateNativeUPI(id, amount, method) {
+  async initiateRazorpayPayment(id) {
     try {
-      app.showToast(`Opening ${method}...`, 'info');
-      
-      // 1. Construct the native UPI Intent URL
-      // We use an invalid payee address (security-test@ybl) so the bank app safely rejects it.
-      const upiId = 'security-test@ybl';
-      const name = encodeURIComponent('ShareAuto Test');
-      const intentUrl = `upi://pay?pa=${upiId}&pn=${name}&am=${amount.toFixed(2)}&cu=INR`;
+      const btn = event.currentTarget;
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Initializing Gateway...';
+      btn.disabled = true;
 
-      // 2. Set up the visibility change listener to detect when they return
-      this.pendingPayment = { id, amount, method };
-      
-      if (!this.visibilityHandler) {
-        this.visibilityHandler = async () => {
-          if (document.visibilityState === 'visible' && this.pendingPayment) {
-            // User returned to browser from UPI app
-            const payment = this.pendingPayment;
-            this.pendingPayment = null; // Prevent duplicate fires
-            
-            app.showToast('UPI app transaction rejected for security. Completing test flow...', 'info');
-            
-            // 3. Mark the ride as paid in our backend
-            try {
-              const res = await API.post(`/api/passenger/rides/${payment.id}/verify-payment`, { 
-                amount: payment.amount, 
-                method: payment.method 
-              });
+      // 1. Create Order on Backend
+      const orderRes = await API.post(`/api/passenger/rides/${id}/create-order`);
+      if (!orderRes.success) throw new Error(orderRes.error);
+
+      // 2. Initialize Razorpay
+      const options = {
+        key: orderRes.key, // from .env RAZORPAY_KEY_ID via backend
+        amount: orderRes.amount, 
+        currency: "INR",
+        name: "ShareAuto",
+        description: "Ride Fare Payment",
+        image: "https://razorpay.com/assets/favicon.png", // optionally use our own logo
+        order_id: orderRes.orderId,
+        handler: async function (response) {
+          app.showToast('Verifying payment...', 'info');
+          try {
+            // 3. Verify on backend
+            const verifyRes = await API.post(`/api/passenger/rides/${id}/verify-payment`, {
+              method: 'UPI', // or razorpay, backend will treat as online
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            });
+
+            if (verifyRes.success) {
+              app.showToast(`Payment successful!`, 'success');
               
-              if (res.success) {
-                app.showToast(`Test Payment of ₹${payment.amount.toFixed(0)} via ${payment.method} completed!`, 'success');
-                this.activeRide = null;
-                this.renderHome(document.getElementById('passenger-content'));
-              }
-            } catch (err) {
-              console.error(err);
-              app.showToast('Test flow failed.', 'error');
+              // Hide modal and show rating
+              const modal = document.getElementById('payment-modal');
+              if (modal) modal.style.display = 'none';
+              
+              PassengerView.activeRide = null;
+              PassengerView.showRatingModal(id);
             }
+          } catch (err) {
+            app.showToast('Payment verification failed.', 'error');
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
           }
-        };
-        document.addEventListener('visibilitychange', this.visibilityHandler);
-      }
+        },
+        prefill: {
+          name: app.userInfo ? app.userInfo.full_name : "",
+          email: app.userInfo ? app.userInfo.email : "",
+          contact: app.userInfo ? app.userInfo.phone : ""
+        },
+        theme: {
+          color: "#4f46e5" // Our primary brand color
+        },
+        modal: {
+          ondismiss: function() {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+          }
+        }
+      };
 
-      // 3. Trigger the Deep Link to physically open the UPI App
-      window.location.href = intentUrl;
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response) {
+        app.showToast(response.error.description || 'Payment Failed', 'error');
+      });
+      rzp.open();
       
     } catch (err) {
       console.error(err);
-      app.showToast('Failed to open UPI app.', 'error');
+      app.showToast('Failed to initialize payment gateway.', 'error');
+      if (event && event.currentTarget) {
+        event.currentTarget.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Try Again';
+        event.currentTarget.disabled = false;
+      }
     }
   },
 
   async processPayment(id, amount) {
     try {
-      app.showToast('Processing cash payment...', 'info');
+      const btn = event.currentTarget;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      btn.disabled = true;
+
       const res = await API.post(`/api/passenger/rides/${id}/verify-payment`, { amount, method: 'Cash' });
       app.showToast('Payment successful!', 'success');
       
+      // Hide modal and show rating
+      const modal = document.getElementById('payment-modal');
+      if (modal) modal.style.display = 'none';
+      
       this.activeRide = null;
-      this.renderHome(document.getElementById('passenger-content'));
+      this.showRatingModal(id);
     } catch (err) {
       app.showToast(err.error || 'Payment failed.', 'error');
+      if (event && event.currentTarget) {
+        event.currentTarget.disabled = false;
+        event.currentTarget.innerHTML = '<i class="fas fa-money-bill-wave" style="margin-right: 8px;"></i> Pay Cash to Driver';
+      }
     }
   },
 

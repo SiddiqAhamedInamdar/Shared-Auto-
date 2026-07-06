@@ -645,8 +645,31 @@ const DriverView = {
     });
 
     WS.on('payment_confirmed', (data) => {
-      app.showToast(`Payment of ₹${data.amount} received for Ride #${data.rideId}!`, 'success');
-      this.checkActiveRide();
+      // Trigger confetti celebration
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#10b981', '#f59e0b', '#3b82f6']
+        });
+      }
+
+      // Show success screen on the dashboard instead of instantly disappearing
+      const panel = document.getElementById('driver-control-panel');
+      if (panel) {
+        panel.innerHTML = `
+          <div class="active-ride-panel" style="text-align: center; padding: 40px 20px;">
+            <div style="width: 80px; height: 80px; background: var(--color-success-bg); color: var(--color-success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 20px; animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 style="margin-bottom: 8px; color: var(--color-text-primary);">Payment Received!</h2>
+            <p style="color: var(--color-text-muted); font-size: 1.1rem; margin-bottom: 24px;">₹${Number(data.amount).toFixed(0)} via ${data.method}</p>
+            <p style="color: var(--color-text-secondary); font-size: 0.9rem; margin-bottom: 32px;">Ride completed successfully.</p>
+            <button class="btn btn-primary" onclick="DriverView.checkActiveRide()">Find Next Ride</button>
+          </div>
+        `;
+      }
     });
 
     WS.on('passenger_location', (data) => {
