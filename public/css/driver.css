@@ -1,0 +1,367 @@
+/* ═══════════════════════════════════════════════
+   ShareAuto — Driver Dashboard Styles
+   ═══════════════════════════════════════════════ */
+
+/* ── Online/Offline Toggle ── */
+.driver-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+}
+
+.driver-status-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.driver-status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transition: all var(--transition-normal);
+}
+
+.driver-status-dot.online {
+  background: var(--color-success);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+  animation: pulse 2s infinite;
+}
+
+.driver-status-dot.offline {
+  background: var(--color-text-muted);
+}
+
+.driver-status-text {
+  font-weight: 600;
+}
+
+.driver-status-sub {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Onboarding Form ── */
+.onboarding-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.onboarding-progress {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.onboarding-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.onboarding-step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-bg-glass);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all var(--transition-normal);
+}
+
+.onboarding-step.active .onboarding-step-circle {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+.onboarding-step.completed .onboarding-step-circle {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: white;
+}
+
+.onboarding-step-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.onboarding-step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--color-border);
+  margin-bottom: 24px;
+}
+
+.onboarding-step-line.completed {
+  background: var(--color-success);
+}
+
+/* File upload */
+.file-upload {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.file-upload:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+}
+
+.file-upload.has-file {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-upload-icon {
+  font-size: 2rem;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.file-upload-text {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.file-upload-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* ── Ride Request Card ── */
+.ride-request-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  margin-bottom: 16px;
+  animation: fadeInUp 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ride-request-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+}
+
+.ride-request-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.ride-request-passenger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ride-request-passenger-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.ride-request-route {
+  padding: 16px;
+  background: var(--color-bg-glass);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.ride-request-fare {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ride-request-fare-amount {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-success);
+}
+
+.ride-request-distance {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.ride-request-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Earnings Section ── */
+.earnings-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.earnings-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+}
+
+.earnings-card-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-success);
+}
+
+.earnings-card-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.earnings-card-period {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* Pending verification overlay */
+.pending-overlay {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.pending-overlay-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.pending-overlay-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.pending-overlay-text {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.pending-overlay .badge {
+  margin-top: 24px;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+}
+
+/* ── Active Ride Panel ── */
+.active-ride-panel {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-glow);
+  animation: fadeInUp 0.5s ease;
+}
+
+.active-ride-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.active-ride-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.active-ride-passengers {
+  margin: 16px 0;
+}
+
+.active-ride-passenger-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--color-bg-glass);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .earnings-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .ride-request-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-status-bar {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+}
+
+/* ── Driver Map Style ── */
+#driver-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
