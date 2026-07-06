@@ -510,25 +510,38 @@ const PassengerView = {
       </div>
       
       ${ride.status === 'completed' ? `
-        <div class="modal-overlay active" style="display: flex; align-items: center; justify-content: center; position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(10, 14, 26, 0.9); z-index:9999;">
-          <div class="ride-request-card" style="width: 100%; max-width: 440px; padding: 28px; text-align: center;">
-            <div style="margin-bottom: 24px;">
-              <div style="width: 64px; height: 64px; background: var(--color-success-bg); color: var(--color-success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px auto;">
-                <i class="fas fa-check"></i>
+        <div class="modal-overlay active" style="display: flex; align-items: center; justify-content: center; position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(10, 14, 26, 0.95); z-index:9999;">
+          <div class="ride-request-card" style="width: 100%; max-width: 400px; padding: 24px; text-align: left; background: var(--color-bg-secondary); border-radius: var(--radius-xl);">
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+              <div style="background: var(--color-warning-bg); color: var(--color-warning); font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: var(--radius-full); display: inline-block; margin-bottom: 12px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                <i class="fas fa-flask"></i> TEST MODE ACTIVE
               </div>
-              <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Ride Completed!</h2>
-              <p style="color: var(--color-text-muted);">Please complete your payment.</p>
+              <h2 style="font-size: 1.4rem; margin-bottom: 4px;">Complete Payment</h2>
+              <p style="color: var(--color-text-muted); font-size: 0.9rem;">Choose a payment method to simulate.</p>
             </div>
             
-            <div class="fare-summary" style="margin-bottom: 24px; text-align: left; background: var(--color-bg-tertiary); padding: 16px; border-radius: var(--radius-lg);">
-              <div class="fare-row" style="font-size: 1.2rem; font-weight: 700;">
-                <span>Total Fare</span>
-                <span style="color: var(--color-success);">₹${ride.fare_estimate.toFixed(0)}</span>
-              </div>
+            <div class="fare-summary" style="margin-bottom: 24px; background: var(--color-bg-tertiary); padding: 16px; border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--color-border-hover);">
+              <div style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 4px;">Total Amount Due</div>
+              <div style="font-size: 2rem; font-weight: 800; color: white;">₹${ride.fare_estimate.toFixed(0)}</div>
             </div>
-            
-            <button class="btn btn-primary btn-block" style="width: 100%; font-size: 1.1rem; padding: 14px;" onclick="PassengerView.processPayment(${ride.id}, ${ride.fare_estimate})">
-              Pay ₹${ride.fare_estimate.toFixed(0)} Now
+
+            <div style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">UPI Apps</div>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.simulatePayment(${ride.id}, ${ride.fare_estimate}, 'Google Pay')">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20" style="margin-right: 12px;" /> Pay via GPay
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.simulatePayment(${ride.id}, ${ride.fare_estimate}, 'PhonePe')">
+                <div style="width: 20px; height: 20px; background: #5f259f; border-radius: 50%; color: white; display:flex; align-items:center; justify-content:center; font-size: 10px; font-weight:bold; margin-right:12px;">P</div> Pay via PhonePe
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.simulatePayment(${ride.id}, ${ride.fare_estimate}, 'Paytm')">
+                <div style="width: 20px; height: 20px; background: #00b9f1; border-radius: 50%; color: white; display:flex; align-items:center; justify-content:center; font-size: 10px; font-weight:bold; margin-right:12px;">P</div> Pay via Paytm
+              </button>
+            </div>
+
+            <div style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Other Methods</div>
+            <button class="btn btn-secondary" style="width: 100%; justify-content: flex-start; padding: 12px 16px;" onclick="PassengerView.simulatePayment(${ride.id}, ${ride.fare_estimate}, 'Cash')">
+              <i class="fas fa-money-bill-wave" style="color: var(--color-success); margin-right: 12px; font-size: 1.2rem;"></i> Pay Cash to Driver
             </button>
           </div>
         </div>
@@ -545,6 +558,29 @@ const PassengerView = {
       this.checkActiveRide();
     } catch (err) {
       app.showToast(err.error || 'Failed to cancel ride', 'error');
+    }
+  },
+
+  async simulatePayment(id, amount, method) {
+    try {
+      app.showToast(`Opening ${method}...`, 'info');
+      
+      // Simulate app switch and transaction processing delay
+      setTimeout(async () => {
+        try {
+          const res = await API.post(`/api/passenger/rides/${id}/pay`, { amount, method });
+          app.showToast(`Test Payment of ₹${amount.toFixed(0)} via ${method} successful!`, 'success');
+          
+          this.activeRide = null;
+          this.renderHome(document.getElementById('passenger-content'));
+          this.showRatingModal(id);
+        } catch (err) {
+          app.showToast(err.error || 'Payment failed.', 'error');
+        }
+      }, 2000);
+      
+    } catch (err) {
+      app.showToast('Payment simulation failed.', 'error');
     }
   },
 

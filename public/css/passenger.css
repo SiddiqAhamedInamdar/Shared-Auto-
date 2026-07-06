@@ -1,8 +1,8 @@
-/* ═══════════════════════════════════════════════
-   ShareAuto — Passenger Dashboard Styles
-   ═══════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   ShareAuto â€” Passenger Dashboard Styles
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* ── Map Container ── */
+/* â”€â”€ Map Container â”€â”€ */
 .map-container {
   width: 100%;
   height: 400px;
@@ -73,7 +73,7 @@
   color: var(--color-text-muted);
 }
 
-/* ── Booking Panel ── */
+/* â”€â”€ Booking Panel â”€â”€ */
 .booking-panel {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
@@ -210,7 +210,7 @@
   border-radius: var(--radius-full);
 }
 
-/* ── Live Tracking ── */
+/* â”€â”€ Live Tracking â”€â”€ */
 .tracking-container {
   position: relative;
 }
@@ -321,7 +321,7 @@
   margin-top: 4px;
 }
 
-/* ── Ride History Cards ── */
+/* â”€â”€ Ride History Cards â”€â”€ */
 .ride-history-card {
   background: var(--gradient-card);
   border: 1px solid var(--color-border);
@@ -409,7 +409,7 @@
   font-weight: 700;
 }
 
-/* ── Location Suggestions ── */
+/* â”€â”€ Location Suggestions â”€â”€ */
 .location-suggestions {
   position: absolute;
   top: 100%;
@@ -451,7 +451,7 @@
   color: var(--color-text-secondary);
 }
 
-/* ── Rating Modal ── */
+/* â”€â”€ Rating Modal â”€â”€ */
 .rating-modal-stars {
   display: flex;
   justify-content: center;
@@ -461,4 +461,14 @@
 
 .rating-modal-stars .star {
   font-size: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .map-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; border-radius: 0; border: none; z-index: 10; }
+  .booking-panel { position: fixed; bottom: 0; left: 0; right: 0; margin: 0; border-radius: var(--radius-xl) var(--radius-xl) 0 0; z-index: 20; padding: 20px 16px; max-height: 85vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(20px); border: 1px solid var(--color-border); border-bottom: none; }
+  .tracking-info-card { position: fixed; bottom: 0; left: 0; right: 0; margin: 0; border-radius: var(--radius-xl) var(--radius-xl) 0 0; z-index: 20; padding: 20px 16px; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(20px); border: 1px solid var(--color-border); border-bottom: none; }
+  .tracking-container { height: 100%; width: 100%; position: absolute; top:0; left:0; }
+  .tracking-map { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; border-radius: 0; border: none; z-index: 10; }
+  #passenger-control-panel { display: contents; }
+  .grid.grid-2 { display: flex; flex-direction: column-reverse; }
 }
