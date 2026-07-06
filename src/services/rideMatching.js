@@ -116,10 +116,16 @@ function findNearestDriver(pickupLat, pickupLng, genderPref = 'no_preference') {
       AND d.current_lng IS NOT NULL
   `;
 
-  // If gender preference is set, try to match driver gender
-  // (for female_only, prefer female drivers but don't strictly require it)
-  
-  const drivers = db.prepare(query).all();
+  const params = [];
+
+  // Strictly enforce gender preference if specified
+  if (genderPref === 'female' || genderPref === 'female_only') {
+    query += ` AND u.gender = 'female'`;
+  } else if (genderPref === 'male' || genderPref === 'male_only') {
+    query += ` AND u.gender = 'male'`;
+  }
+
+  const drivers = db.prepare(query).all(...params);
 
   if (drivers.length === 0) return null;
 
@@ -139,7 +145,7 @@ function findNearestDriver(pickupLat, pickupLng, genderPref = 'no_preference') {
       AND status IN ('accepted', 'driver_arriving', 'started')
     `).get(driver.id);
 
-    if (!activeRide && driver.distance <= 50) { // Within 50km (increased from 10km for dev testing)
+    if (!activeRide && driver.distance <= 5) { // Within 5km radius (fixed from 50km)
       return driver;
     }
   }
