@@ -72,6 +72,9 @@ const API = {
       headers['Content-Type'] = 'application/json';
     }
 
+    // Bypass localtunnel warning page for API requests
+    headers['bypass-tunnel-reminder'] = 'true';
+
     const config = {
       method,
       headers,
